@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "anime2stereo"
+version = "0.1.0"
+description = "Lift traditional 2D cel animation into stereoscopic 3D via cel segmentation, clean-plate inpainting and layered depth-image-based rendering."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Jesse Yu" }]
+dependencies = [
+    "numpy>=1.24",
+    "opencv-python>=4.8",
+    "scipy>=1.10",
+]
+
+[project.optional-dependencies]
+ml = ["torch>=2.1", "transformers>=4.40", "pillow>=10"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+anime2stereo = "anime2stereo.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["anime2stereo*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
