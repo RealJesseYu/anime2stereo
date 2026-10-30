@@ -89,7 +89,14 @@ produced versus what the layered render leaves (cracks only).
 Run on a 10 s clip of *Momotarō no Umiwashi* (482×360, 240 frames, 4 shots) on an
 Apple M4 (CPU + MPS):
 
-RESULTS_TABLE
+| depth mode | cels / frame | cel coverage | static layers lifted | holes, naive 1-layer DIBR | holes, layered render | wall time (240 f) |
+|---|---|---|---|---|---|---|
+| `cel` | 7.7 | 7.6% | 0.0% | 1.79% | 0.12% | 89 s (0.37 s/frame) |
+| `ml` | 7.7 | 18.1% | 19.0% | 1.09% | 0.76% | 259 s (1.08 s/frame) |
+| `hybrid` | 7.7 | 18.1% | 19.0% | 1.76% | 0.98% | 283 s (1.18 s/frame) |
+
+"Holes" = fraction of output pixels a forward warp leaves unwritten before any filling, averaged over both eyes (frame-weighted over the 4 shots). The layered number is residual 1-px cracks on the background only; cel disocclusions are gone because the plate already holds what is behind them. `cel` mode has no ML and runs in ~0.4 s/frame; `hybrid` spends most of its time in Depth-Anything on MPS plus GrabCut.
+
 
 Strip = original | cel instances | depth (warm = near) | red-cyan anaglyph:
 
@@ -119,6 +126,7 @@ Depth-Anything-V2-Small (~100 MB) is downloaded from the Hugging Face hub on fir
 ## Usage
 
 ```bash
+scripts/download_test_footage.sh footage/     # ~120 MB of public-domain test films
 anime2stereo input.mp4 -o out/ --start 270 --duration 10            # hybrid depth (default)
 anime2stereo input.mp4 -o out/ --depth cel                            # no ML at all
 anime2stereo input.mp4 -o out/ --max-disparity 0.02 --convergence 0.6 # milder, screen plane at depth 0.6
